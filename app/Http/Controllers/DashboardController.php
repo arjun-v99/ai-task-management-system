@@ -12,7 +12,7 @@ class DashboardController extends Controller
     public function index()
     {
         $stats       = $this->taskService->getDashboardStats();
-        $recentTasks = Task::latest()->take(5)->get();
+        $recentTasks = $this->taskService->getRecentTasks();
 
         return view('dashboard', compact('stats', 'recentTasks'));
     }

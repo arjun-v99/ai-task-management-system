@@ -48,4 +48,28 @@ class TaskRepository implements TaskRepositoryInterface
         $task = $this->find($id);
         return $task->delete();
     }
+
+    public function getRecent(int $limit = 5)
+    {
+        return Task::query()
+            ->with('assignedUser')
+            ->latest()
+            ->take($limit)
+            ->get();
+    }
+
+    public function count(): int
+    {
+        return Task::count();
+    }
+
+    public function countByStatus(string $status): int
+    {
+        return Task::where('status', $status)->count();
+    }
+
+    public function countByPriority(string $priority): int
+    {
+        return Task::where('priority', $priority)->count();
+    }
 }

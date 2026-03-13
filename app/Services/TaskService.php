@@ -68,10 +68,15 @@ class TaskService
     {
         // These raw counts are fine here — no business reason to repo-ify them
         return [
-            'total'     => Task::count(),
-            'completed' => Task::where('status', 'completed')->count(),
-            'pending'   => Task::where('status', 'pending')->count(),
-            'high'      => Task::where('priority', 'high')->count(),
+            'total'     => $this->repo->count(),
+            'completed' => $this->repo->countByStatus('completed'),
+            'pending'   => $this->repo->countByStatus('pending'),
+            'high'      => $this->repo->countByPriority('high'),
         ];
+    }
+
+    public function getRecentTasks(int $limit = 5)
+    {
+        return $this->repo->getRecent($limit);
     }
 }
