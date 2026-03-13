@@ -22,7 +22,7 @@
 
         <nav class="space-y-1 text-sm">
 
-            <a href="{{ route('tasks.index') }}"
+            <a href="{{ route('dashboard') }}"
                 class="block px-3 py-2 rounded-md
                {{ request()->routeIs('tasks.*') ? 'bg-blue-500 text-white' : 'hover:bg-gray-100 text-gray-700' }}">
                 Tasks

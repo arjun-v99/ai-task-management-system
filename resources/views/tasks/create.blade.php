@@ -247,9 +247,10 @@
                         </div>
 
                         <div class="space-y-2 text-sm">
-                            <div class="bg-blue-500 text-white px-3 py-2 rounded">
+                            <a href="{{ route('dashboard') }}"
+                                class="block px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700">
                                 Tasks
-                            </div>
+                            </a>
 
 
 

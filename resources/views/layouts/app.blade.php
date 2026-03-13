@@ -21,13 +21,7 @@
 
 
 
-        {{-- Global Top Bar --}}
-        <div class="bg-slate-800 px-6 py-4">
-            <a href="{{ route('dashboard') }}"
-                class="text-white text-xl font-bold hover:text-blue-400 transition-colors duration-200">
-                Task List
-            </a>
-        </div>
+
         <!-- Page Content -->
         <main>
             {{ $slot }}
