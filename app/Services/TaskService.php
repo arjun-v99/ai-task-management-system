@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\Contracts\TaskRepositoryInterface;
 use Illuminate\Support\Facades\DB;
+use App\Models\Task;
 
 class TaskService
 {
@@ -67,10 +68,10 @@ class TaskService
     {
         // These raw counts are fine here — no business reason to repo-ify them
         return [
-            'total'     => \App\Models\Task::count(),
-            'completed' => \App\Models\Task::where('status', 'completed')->count(),
-            'pending'   => \App\Models\Task::where('status', 'pending')->count(),
-            'high'      => \App\Models\Task::where('priority', 'high')->count(),
+            'total'     => Task::count(),
+            'completed' => Task::where('status', 'completed')->count(),
+            'pending'   => Task::where('status', 'pending')->count(),
+            'high'      => Task::where('priority', 'high')->count(),
         ];
     }
 }

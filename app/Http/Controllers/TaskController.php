@@ -33,7 +33,7 @@ class TaskController extends Controller
 
     public function create()
     {
-        $users = User::all();
+        $users = User::orderBy('name')->get();
         return view('tasks.create', ['users' => $users]);
     }
 
@@ -55,10 +55,11 @@ class TaskController extends Controller
 
     public function edit(int $id)
     {
+        $users = User::orderBy('name')->get();
         $task = $this->taskService->getById($id);
         $this->authorize('update', $task);
 
-        return view('tasks.edit', compact('task'));
+        return view('tasks.edit', compact('task', 'users'));
     }
 
     public function update(UpdateTaskRequest $request, int $id)
