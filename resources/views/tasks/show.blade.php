@@ -1,162 +1,235 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Task Detail
-            </h2>
-            <a href="{{ route('tasks.index') }}" class="text-sm text-gray-500 hover:underline">
-                ← Back to Tasks
-            </a>
-        </div>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="min-h-screen bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 py-10">
+        <div class="max-w-7xl mx-auto px-6">
 
-            {{-- ── Success Flash ───────────────────────────────────── --}}
-            @if (session('success'))
-                <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded">
-                    {{ session('success') }}
-                </div>
-            @endif
+            {{-- HEADER --}}
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-3xl font-bold text-white">
+                    Task Detail + AI Summary
+                </h1>
 
-            {{-- ── Task Details Card ───────────────────────────────── --}}
-            <div class="bg-white shadow rounded-lg p-6">
-
-                {{-- Title + Action Buttons --}}
-                <div class="flex items-start justify-between mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">
-                        {{ $task->title }}
-                    </h3>
-                    <div class="flex gap-2">
-                        @can('update', $task)
-                            <a href="{{ route('tasks.edit', $task) }}"
-                                class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm hover:bg-indigo-700">
-                                Edit
-                            </a>
-                        @endcan
-
-                        @can('delete', $task)
-                            <form method="POST" action="{{ route('tasks.destroy', $task) }}"
-                                onsubmit="return confirm('Are you sure you want to delete this task?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="bg-red-500 text-white px-4 py-2 rounded-md text-sm hover:bg-red-600">
-                                    Delete
-                                </button>
-                            </form>
-                        @endcan
-                    </div>
-                </div>
-
-                {{-- Status + Priority Badges --}}
-                <div class="flex gap-3 mb-6">
-                    @php
-                        $statusColors = match ($task->status->value) {
-                            'pending' => 'bg-gray-100 text-gray-600',
-                            'in_progress' => 'bg-blue-100 text-blue-700',
-                            'completed' => 'bg-green-100 text-green-700',
-                            default => 'bg-red-100 text-red-600',
-                        };
-                        $priorityColors = match ($task->priority->value) {
-                            'low' => 'bg-green-100 text-green-700',
-                            'medium' => 'bg-yellow-100 text-yellow-700',
-                            'high' => 'bg-red-100 text-red-600',
-                            default => 'bg-gray-100 text-gray-600',
-                        };
-                    @endphp
-
-                    <span class="px-3 py-1 rounded-full text-xs font-medium {{ $statusColors }}">
-                        {{ ucfirst(str_replace('_', ' ', $task->status->value)) }}
-                    </span>
-                    <span class="px-3 py-1 rounded-full text-xs font-medium {{ $priorityColors }}">
-                        {{ ucfirst($task->priority->value) }} Priority
-                    </span>
-                </div>
-
-                {{-- Description --}}
-                <div class="mb-6">
-                    <p class="text-sm font-medium text-gray-500 mb-1">Description</p>
-                    <p class="text-gray-700 leading-relaxed">
-                        {{ $task->description ?? 'No description provided.' }}
-                    </p>
-                </div>
-
-                {{-- Meta Grid --}}
-                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Assigned To</p>
-                        <p class="text-sm text-gray-700 font-medium">
-                            {{ $task->assignedUser?->name ?? 'Unassigned' }}
-                        </p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Due Date</p>
-                        <p class="text-sm text-gray-700 font-medium">
-                            {{ $task->due_date?->format('M d, Y') ?? '—' }}
-                        </p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Created</p>
-                        <p class="text-sm text-gray-700 font-medium">
-                            {{ $task->created_at->format('M d, Y h:i A') }}
-                        </p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Last Updated</p>
-                        <p class="text-sm text-gray-700 font-medium">
-                            {{ $task->updated_at->format('M d, Y h:i A') }}
-                        </p>
-                    </div>
-                </div>
-
+                <a href="{{ route('tasks.create') }}"
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
+                    + New Task
+                </a>
             </div>
 
-            {{-- ── AI Summary Card ─────────────────────────────────── --}}
-            <div class="bg-white shadow rounded-lg p-6 border-l-4 border-indigo-500">
 
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="text-indigo-600 text-lg">✨</span>
-                    <h4 class="text-md font-semibold text-gray-800">AI Analysis</h4>
+            {{-- FILTERS --}}
+            <form method="GET" action="{{ route('tasks.index') }}" class="flex flex-wrap items-center gap-3 mb-8">
+
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search Filter Task"
+                    class="bg-white/90 rounded-md px-4 py-2 w-60 focus:outline-none">
+
+                <select name="status" class="bg-white/90 rounded-md px-4 py-2">
+                    <option value="">Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+
+                <select name="assigned" class="bg-white/90 rounded-md px-4 py-2">
+                    <option value="">Assigned</option>
+                </select>
+
+                <select name="priority" class="bg-white/90 rounded-md px-4 py-2">
+                    <option value="">Priority</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md">
+                    Filter
+                </button>
+
+                <a href="{{ route('tasks.index') }}" class="bg-gray-300 px-4 py-2 rounded-md">
+                    Clear
+                </a>
+
+            </form>
+
+
+            {{-- MAIN GRID --}}
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+
+                {{-- TASK DETAIL CARD --}}
+                <div class="lg:col-span-3">
+
+                    <div class="bg-white rounded-xl shadow-md p-8">
+
+                        {{-- TITLE --}}
+                        <div class="flex items-start justify-between mb-6">
+
+                            <h2 class="text-2xl font-bold text-gray-900">
+                                {{ $task->title }}
+                            </h2>
+
+                            <span class="text-gray-400 text-xl">•••</span>
+
+                        </div>
+
+
+                        {{-- STATUS + PRIORITY --}}
+                        <div class="flex gap-3 mb-6">
+
+                            @php
+                                $statusColors = match ($task->status->value) {
+                                    'pending' => 'bg-gray-100 text-gray-600',
+                                    'in_progress' => 'bg-blue-100 text-blue-700',
+                                    'completed' => 'bg-green-100 text-green-700',
+                                    default => 'bg-red-100 text-red-600',
+                                };
+
+                                $priorityColors = match ($task->priority->value) {
+                                    'low' => 'bg-green-100 text-green-700',
+                                    'medium' => 'bg-yellow-100 text-yellow-700',
+                                    'high' => 'bg-red-100 text-red-600',
+                                    default => 'bg-gray-100 text-gray-600',
+                                };
+                            @endphp
+
+                            <span class="px-3 py-1 rounded-full text-xs font-medium {{ $statusColors }}">
+                                Status {{ ucfirst(str_replace('_', ' ', $task->status->value)) }}
+                            </span>
+
+                            <span class="px-3 py-1 rounded-full text-xs font-medium {{ $priorityColors }}">
+                                Priority {{ ucfirst($task->priority->value) }}
+                            </span>
+
+                        </div>
+
+
+
+                        {{-- DESCRIPTION BLOCK --}}
+                        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+
+                            <h4 class="font-semibold text-gray-800 mb-3">
+                                Description
+                            </h4>
+
+                            <p class="text-sm text-gray-500 mb-3">
+                                Assigned to: {{ $task->assignedUser?->name ?? 'Unassigned' }}
+                            </p>
+
+                            <div class="bg-white rounded-md border px-4 py-2 text-sm text-gray-600 mb-4">
+                                Due Date: {{ $task->due_date?->format('Y-m-d') ?? '—' }}
+                            </div>
+
+                            <p class="text-gray-600 text-sm">
+                                {{ $task->description ?? 'No description provided.' }}
+                            </p>
+
+                        </div>
+
+
+
+                        {{-- AI SUMMARY --}}
+                        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+
+                            <h4 class="font-semibold text-gray-800 mb-3">
+                                AI Generated Summary
+                            </h4>
+
+                            @if ($task->ai_summary)
+                                <p class="text-gray-600 text-sm mb-4">
+                                    {{ $task->ai_summary }}
+                                </p>
+
+                                <div class="text-sm">
+                                    <span class="font-semibold">AI Priority:</span>
+                                    {{ ucfirst($task->ai_priority) }}
+                                </div>
+                            @else
+                                <p class="text-sm text-gray-400 italic">
+                                    AI summary not generated yet.
+                                </p>
+                            @endif
+
+                        </div>
+
+
+
+                        {{-- SAVE BUTTON --}}
+                        <div class="flex justify-center">
+
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg">
+                                Save Changes
+                            </button>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
-                @if ($task->ai_summary)
-                    {{-- AI Summary --}}
-                    <div class="mb-4">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Summary</p>
-                        <p class="text-gray-700 leading-relaxed">
-                            {{ $task->ai_summary }}
-                        </p>
+
+
+                {{-- RIGHT PANEL (same as dashboard) --}}
+                <div class="space-y-6">
+
+                    <div class="bg-white rounded-xl shadow p-6">
+
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+
+                            <div>
+                                <p class="font-semibold">{{ auth()->user()->name }}</p>
+                                <p class="text-xs text-gray-500">Admin User</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 text-sm">
+
+                            <div class="bg-blue-500 text-white px-3 py-2 rounded">
+                                Tasks
+                            </div>
+
+                            <div class="px-3 py-2 rounded hover:bg-gray-100">
+                                Users
+                            </div>
+
+                            <div class="px-3 py-2 rounded hover:bg-gray-100">
+                                Logout
+                            </div>
+
+                        </div>
+
                     </div>
 
-                    {{-- AI Priority --}}
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Suggested Priority</p>
-                        @php
-                            $aiPriorityColors = match ($task->ai_priority) {
-                                'low' => 'bg-green-100 text-green-700',
-                                'medium' => 'bg-yellow-100 text-yellow-700',
-                                'high' => 'bg-red-100 text-red-600',
-                                default => 'bg-gray-100 text-gray-600',
-                            };
-                        @endphp
-                        <span class="px-3 py-1 rounded-full text-xs font-medium {{ $aiPriorityColors }}">
-                            {{ ucfirst($task->ai_priority) }}
-                        </span>
+
+
+                    {{-- METRICS --}}
+                    <div class="bg-white rounded-xl shadow p-6">
+
+                        <h4 class="font-semibold mb-4">Task Metrics</h4>
+
+                        <div class="grid grid-cols-2 gap-4 text-center">
+
+
+                            <div>
+                                <p class="text-2xl font-bold text-green-500">{{ $stats['completed'] }}</p>
+                                <p class="text-xs text-gray-400">Completed</p>
+                            </div>
+
+                            <div>
+                                <p class="text-2xl font-bold text-yellow-500">{{ $stats['pending'] }}</p>
+                                <p class="text-xs text-gray-400">Pending</p>
+                            </div>
+
+                            <div>
+                                <p class="text-2xl font-bold text-red-500">{{ $stats['high'] }}</p>
+                                <p class="text-xs text-gray-400">High</p>
+                            </div>
+
+                        </div>
+
                     </div>
-                @else
-                    {{-- No AI data yet --}}
-                    <div class="flex items-center gap-3 text-gray-400">
-                        <svg class="animate-spin h-4 w-4 text-indigo-400" xmlns="http://www.w3.org/2000/svg"
-                            fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                        </svg>
-                        <p class="text-sm italic">AI summary is being generated...</p>
-                    </div>
-                @endif
+
+                </div>
+
 
             </div>
 

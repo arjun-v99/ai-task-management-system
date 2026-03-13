@@ -47,10 +47,11 @@ class TaskController extends Controller
 
     public function show(int $id)
     {
+        $stats       = $this->taskService->getDashboardStats();
         $task = $this->taskService->getById($id);
         $this->authorize('view', $task);
 
-        return view('tasks.show', compact('task'));
+        return view('tasks.show', compact('task', 'stats'));
     }
 
     public function edit(int $id)
@@ -59,7 +60,7 @@ class TaskController extends Controller
         $task = $this->taskService->getById($id);
         $this->authorize('update', $task);
 
-        return view('tasks.edit', compact('task', 'users'));
+        return view('tasks.create', compact('task', 'users'));
     }
 
     public function update(UpdateTaskRequest $request, int $id)

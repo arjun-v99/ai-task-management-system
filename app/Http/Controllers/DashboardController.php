@@ -9,11 +9,17 @@ use App\Models\Task;
 class DashboardController extends Controller
 {
     public function __construct(protected TaskService $taskService) {}
-    public function index()
+    public function index(Request $request)
     {
-        $stats       = $this->taskService->getDashboardStats();
-        $recentTasks = $this->taskService->getRecentTasks();
+        $filters = $request->only(['status', 'priority', 'search']);
 
-        return view('dashboard', compact('stats', 'recentTasks'));
+        $stats = $this->taskService->getDashboardStats();
+
+        // Pass filters so repository scopes kick in
+        $tasks = auth()->user()->isAdmin()
+            ? $this->taskService->getAll($filters)
+            : $this->taskService->getAllForUser(auth()->id(), $filters);
+
+        return view('dashboard', compact('stats', 'tasks'));
     }
 }
