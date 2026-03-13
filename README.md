@@ -74,23 +74,7 @@ app/
 
 ## Things to Know Before Running
 
-### SSL Certificate (WAMP / Windows)
-The Claude API requires a valid SSL certificate. On WAMP, you may encounter a cURL SSL error. Fix it before running:
 
-1. Download the CA cert from https://curl.se/ca/cacert.pem and save it to:
-   ```
-   C:\wamp64\bin\php\php8.2.0\cacert.pem
-   ```
-
-2. Open `php.ini` via WAMP tray icon → PHP → php.ini and update:
-   ```ini
-   curl.cainfo = "C:\wamp64\bin\php\php8.2.0\cacert.pem"
-   openssl.cafile = "C:\wamp64\bin\php\php8.2.0\cacert.pem"
-   ```
-
-3. Restart WAMP.
-
-> If you skip this step, `AIService` will automatically fall back to a mock response — the app will still work, just without real AI summaries.
 
 ### Roles
 The app has two roles — `admin` and `user`. Admins see and manage all tasks. Regular users only see tasks assigned to them. Make sure you seed the database (see below) to get test accounts for both roles.
