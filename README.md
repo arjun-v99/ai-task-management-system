@@ -117,6 +117,8 @@ ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxx
 ```
 > Leave this empty if you want to use mock AI responses instead.
 
+### Important: Before you proceed further make sure you have created the DB as specified in your .env file and the DB_PORT, DB_USERNAME and DB_PASSWORD matches according to your current system configuration.
+
 ### 6. Run migrations and seed
 ```bash
 php artisan migrate
