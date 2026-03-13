@@ -30,14 +30,20 @@
                 {{-- Status dropdown --}}
                 <select name="status" class="rounded-md border-gray-300 text-sm">
                     <option value="">All Statuses</option>
-                    {{-- LOOP through TaskStatus enum and render each as an option --}}
-                    {{-- Mark as selected if request('status') matches --}}
+                    @foreach ($taskStatuses as $status)
+                        <option value="{{ $status->value }}" @selected(request('status') == $status->value)>{{ ucfirst($status->name) }}
+                        </option>
+                    @endforeach
                 </select>
 
                 {{-- Priority dropdown --}}
                 <select name="priority" class="rounded-md border-gray-300 text-sm">
                     <option value="">All Priorities</option>
                     {{-- LOOP through TaskPriority enum and render each as an option --}}
+                    @foreach ($priorities as $priority)
+                        <option value="{{ $priority->value }}">{{ ucfirst($priority->value) }}
+                        </option>
+                    @endforeach
                 </select>
 
                 {{-- Search --}}
