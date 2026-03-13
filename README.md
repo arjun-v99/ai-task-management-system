@@ -136,7 +136,7 @@ ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxx
 ### 6. Run migrations and seed
 ```bash
 php artisan migrate
-php artisan db:seed --class=AdminUserSeeder
+php artisan db:seed --class=UserSeeder
 ```
 
 ### 7. Build frontend assets
