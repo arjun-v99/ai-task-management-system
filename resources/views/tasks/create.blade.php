@@ -251,13 +251,14 @@
                                 Tasks
                             </div>
 
-                            <div class="px-3 py-2 rounded hover:bg-gray-100">
-                                Users
-                            </div>
 
-                            <div class="px-3 py-2 rounded hover:bg-gray-100">
-                                Logout
-                            </div>
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 text-gray-700">
+                                    Logout
+                                </button>
+                            </form>
                         </div>
 
                     </div>
