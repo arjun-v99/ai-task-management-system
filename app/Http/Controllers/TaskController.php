@@ -25,6 +25,7 @@ class TaskController extends Controller
             ? $this->taskService->getAll($filters)
             : $this->taskService->getAllForUser($request->user()->id, $filters);
 
+        // Fetching ENUMS
         $taskStatuses = TaskStatus::cases();
         $priorities = TaskPriority::cases();
 
